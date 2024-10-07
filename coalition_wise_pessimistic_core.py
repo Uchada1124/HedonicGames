@@ -2,6 +2,12 @@ import itertools
 import partition_utils
 
 def get_subsets(players):
+    """
+    与えられたプレイヤーのリストから非空部分集合を全て生成する。
+
+    :param players: 部分集合を生成するプレイヤーのリスト。
+    :return: 非空の全ての部分集合を含むリスト。
+    """
     n = len(players)
     all_combinations = itertools.product(range(2), repeat=n)
 
@@ -14,6 +20,13 @@ def get_subsets(players):
     return subsets
 
 def get_remaining_group(partition, deviation_candidate):
+    """
+    指定した deviation_candidate を除いた後の残りのプレイヤーグループを生成する。
+
+    :param partition: 現在のプレイヤーのパーティション（グループのリスト）。
+    :param deviation_candidate: パーティションから除外するプレイヤーのリスト。
+    :return: deviation_candidate を除いた後のプレイヤーを含むリスト。
+    """
     remaining_group = []
 
     for group in partition:
@@ -24,9 +37,16 @@ def get_remaining_group(partition, deviation_candidate):
     return remaining_group
 
 def check_deviation(partition, deviation_candidate):
+    """
+    deviation_candidate が現在のパーティションから離脱することによってスコアが改善するかをチェックする。
+
+    :param partition: 現在のプレイヤーのパーティション。
+    :param deviation_candidate: 離脱を検討するプレイヤーの部分集合。
+    :return: スコアがすべての条件で改善する場合 True、それ以外は False。
+    """
     remaining = get_remaining_group(partition, deviation_candidate)
 
-    current_scores = partition_utils.score_partition_as_dict(partition)        
+    current_scores = partition_utils.score_partition_as_dict(partition)
 
     if len(remaining) == 0:
         new_partition = [deviation_candidate]
@@ -49,14 +69,27 @@ def check_deviation(partition, deviation_candidate):
     return True
 
 def print_all_deviation(data, subsets):
+    """
+    各パーティションに対して、各サブセットがデビエーションするかどうかを出力する。
+
+    :param data: プレイヤーのリスト。
+    :param subsets: data から生成された全ての部分集合のリスト。
+    """
     partitions = list(partition_utils.get_partitions(data))
     for partition in partitions:
         print(f"Partition: {partition}")
         for subset in subsets:
             result = check_deviation(partition, subset)
-            print(f"Subset:{subset}, Deviation:{result}")
+            print(f"Subset: {subset}, Deviation: {result}")
 
 def find_pessimistic_core(data, subsets):
+    """
+    各代表パーティションに対して、全てのサブセットに対するデビエーションの結果をチェックし、
+    全てのデビエーションが False であれば、そのパーティションをペシミスティックコアとする。
+
+    :param data: プレイヤーのリスト。
+    :param subsets: data から生成された全ての部分集合のリスト。
+    """
     partitions = list(partition_utils.get_partitions(data))
     scores_list = partition_utils.score_partitions(partitions)
     grouped_symmetries = partition_utils.group_by_symmetries(scores_list)
@@ -77,14 +110,14 @@ def find_pessimistic_core(data, subsets):
         if all_false:
             print(f"Partition: {partition} is a Pessimistic Core")
 
-
-
 def main():
-    # Example usage
+    """
+    メイン関数として、プレイヤーのデータを使ってペシミスティックコアの探索を行う。
+    """
     data = [1, 2, 3, 4, 5]
 
     subsets = get_subsets(data)
-    # print_all_deviation(data, subsets)
+
     find_pessimistic_core(data, subsets)
 
 if __name__ == '__main__':
