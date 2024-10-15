@@ -1,9 +1,10 @@
 import partition_utils
 import core_utils
+import csv
 
 def check_partition_wise_pessimistic_deviation(partition, deviation_candidate): 
     """
-    deviation_candidateの全ての部分集合 (partition pattern) に対して、remaining の全ての分割において
+    deviation_candidate の全ての部分集合 (partition pattern) に対して、remaining の全ての分割において
     deviation_candidate のスコアが改善する場合を確認し、deviation が可能かどうかを判断する。
 
     :param partition: 現在のプレイヤーのパーティション (リストのリスト)。
@@ -44,60 +45,91 @@ def check_partition_wise_pessimistic_deviation(partition, deviation_candidate):
 
     return False
 
-def print_all_partition_wise_pessimistic_deviation(data, subsets):
+def process_partition_wise_pessimistic_core(data, subsets):
     """
-    全てのパーティションと各サブセット (subsets) に対して、deviation が可能かどうかを出力する。
+    全ての代表パーティションに対してペシミスティックコアをチェックし、パーティション、スコア、コアかどうかのリストを生成する。
 
     :param data: プレイヤーのリスト。
-    :param subsets: data から生成された全ての部分集合のリスト。
-    """
-    partitions = list(partition_utils.get_partitions(data))
-    for partition in partitions:
-        print(f"Partition: {partition}")
-        for subset in subsets:
-            result = check_partition_wise_pessimistic_deviation(partition, subset)
-            print(f"Subset: {subset}, Deviation: {result}")
-
-def find_and_print_pessimistic_core(data, subsets):
-    """
-    全ての代表パーティションに対して、全ての部分集合のデビエーションをチェックし、
-    1つでもデビエーションが成立しないパーティションをペシミスティックコアとして出力する。
-
-    :param data: プレイヤーのリスト。
-    :param subsets: data から生成された全ての部分集合のリスト。
+    :param subsets: 全ての部分集合を含むリスト。
+    :return: パーティション、スコアリスト、コアかどうかのリストをタプルで返す。
     """
     partitions = list(partition_utils.get_partitions(data))
     scores_list = partition_utils.score_partitions(partitions)
     grouped_symmetries = partition_utils.group_by_symmetries(scores_list)
     representative_partitions = partition_utils.get_representative_partitions(grouped_symmetries)
 
+    core_status_list = []
+    all_scores = []
+
     for partition in representative_partitions:
-        print(f"\nPartition: {partition}")
-        
         all_false = True
         for subset in subsets:
             result = check_partition_wise_pessimistic_deviation(partition, subset)
-            print(f"Subset: {subset}, Deviation: {result}")
-            
             if result:
                 all_false = False
                 break
-        
-        if all_false:
-            print(f"Partition: {partition} is a Pessimistic Core")
-        else:
-            print(f"Partition: {partition} is not a Pessimistic Core")
+
+        core_status = "Yes" if all_false else "No"
+        core_status_list.append(core_status)
+        all_scores.append(partition_utils.score_partition_as_list(partition))
+    
+    return representative_partitions, all_scores, core_status_list
+
+def write_to_csv(partitions, scores_list, core_status, filename="partition_wise_pessimistic_core_output.csv"):
+    """
+    ペシミスティックコアの結果（パーティション、スコア、コアかどうか）をCSVに出力する関数。
+
+    :param partitions: 各代表パーティションのリスト。
+    :param scores_list: 各パーティションのスコアリスト。
+    :param core_status: ペシミスティックコアかどうかのステータスリスト。
+    :param filename: CSVファイルの名前（デフォルト: "partition_wise_pessimistic_core_output.csv"）。
+    """
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Partition", "Scores", "Pessimistic Core"])
+        for partition, score, core in zip(partitions, scores_list, core_status):
+            writer.writerow([partition, score, core])
+
+def print_to_cli(partitions, scores_list, core_status):
+    """
+    ペシミスティックコアの結果（パーティション、スコア、コアかどうか）をCLIに出力する関数。
+
+    :param partitions: 各代表パーティションのリスト。
+    :param scores_list: 各パーティションのスコアリスト。
+    :param core_status: ペシミスティックコアかどうかのステータスリスト。
+    """
+    for partition, score, core in zip(partitions, scores_list, core_status):
+        print(f"Partition: {partition}")
+        print(f"Scores: {score}")
+        print(f"Pessimistic Core: {core}")
+        print("-" * 50)
+
+def find_and_output_pessimistic_core(data, subsets, output_type="cli", filename="partition_wise_pessimistic_core_output.csv"):
+    """
+    ペシミスティックコアの結果をCLIまたはCSVに出力する。
+
+    :param data: プレイヤーのリスト。
+    :param subsets: 全ての部分集合を含むリスト。
+    :param output_type: 出力方法を指定（"cli" または "csv"）。
+    :param filename: CSV出力の場合のファイル名（デフォルト: "partition_wise_pessimistic_core_output.csv"）。
+    """
+    partitions, scores_list, core_status_list = process_partition_wise_pessimistic_core(data, subsets)
+
+    if output_type == "cli":
+        print_to_cli(partitions, scores_list, core_status_list)
+    elif output_type == "csv":
+        write_to_csv(partitions, scores_list, core_status_list, filename)
 
 def main():
     """
-    メイン関数として、与えられたプレイヤーのデータを使ってペシミスティックコアの探索を行う。
+    メイン関数として、与えられたプレイヤーのデータを使ってペシミスティックコアの探索を行い、結果を出力する。
+    出力はCLIまたはCSVで指定可能。
     """
-    n = 6
+    n = 5
     data = list(range(1, n+1))
-
     subsets = core_utils.get_subsets(data)
-
-    find_and_print_pessimistic_core(data, subsets)
+    output_type = "cli"
+    find_and_output_pessimistic_core(data, subsets, output_type)
 
 if __name__ == '__main__':
     main()
