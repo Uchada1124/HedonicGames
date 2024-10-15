@@ -1,28 +1,52 @@
 import partition_utils
 import core_utils
 
-def check_partition_wise_pessimistic_deviation(partition, deviation_candidate):
+def check_partition_wise_pessimistic_deviation(partition, deviation_candidate): 
     """
-    deviation_candidate の全てのパーティション (分割パターン) に対して
-    check_coalition_wise_pessimistic_deviation を実行し、1つでも deviation が
-    成立するパターンがあれば True を返し、どれも成立しなければ False を返す。
+    deviation_candidateの全ての部分集合 (partition pattern) に対して、remaining の全ての分割において
+    deviation_candidate のスコアが改善する場合を確認し、deviation が可能かどうかを判断する。
 
-    :param partition: 現在のプレイヤーのパーティション。
-    :param deviation_candidate: 離脱を検討するプレイヤーの部分集合。
+    :param partition: 現在のプレイヤーのパーティション (リストのリスト)。
+    :param deviation_candidate: 離脱を検討するプレイヤーの部分集合 (リスト)。
     :return: 1つでもスコアが改善するパターンがあれば True、それ以外は False。
     """
+    remaining = core_utils.get_remaining_group(partition, deviation_candidate)
+    current_scores = partition_utils.score_partition_as_dict(partition)
     deviation_partitions = list(partition_utils.get_partitions(deviation_candidate))
 
     for partition_pattern in deviation_partitions:
-        if core_utils.check_coalition_wise_pessimistic_deviation(partition, partition_pattern):
-            return True
-    
-    return False
+        all_improve = True
 
+        if len(remaining) == 0:
+            new_partition = partition_pattern
+            new_scores = partition_utils.score_partition_as_dict(new_partition)
+
+            for player in deviation_candidate:
+                if not (current_scores[player] > new_scores[player]):
+                    all_improve = False
+                    break
+
+        else:
+            for remaining_partition in partition_utils.get_partitions(remaining):
+                new_partition = partition_pattern + remaining_partition
+                new_scores = partition_utils.score_partition_as_dict(new_partition)
+
+                for player in deviation_candidate:
+                    if not (current_scores[player] > new_scores[player]):
+                        all_improve = False
+                        break
+
+                if not all_improve:
+                    break
+
+        if all_improve:
+            return True
+
+    return False
 
 def print_all_partition_wise_pessimistic_deviation(data, subsets):
     """
-    各パーティションに対して、各サブセットがデビエーションするかどうかを出力する。
+    全てのパーティションと各サブセット (subsets) に対して、deviation が可能かどうかを出力する。
 
     :param data: プレイヤーのリスト。
     :param subsets: data から生成された全ての部分集合のリスト。
@@ -31,14 +55,13 @@ def print_all_partition_wise_pessimistic_deviation(data, subsets):
     for partition in partitions:
         print(f"Partition: {partition}")
         for subset in subsets:
-
             result = check_partition_wise_pessimistic_deviation(partition, subset)
             print(f"Subset: {subset}, Deviation: {result}")
 
 def find_and_print_pessimistic_core(data, subsets):
     """
-    各代表パーティションに対して、全てのサブセットに対するデビエーションの結果をチェックし、
-    全てのデビエーションが False であれば、そのパーティションをペシミスティックコアとする。
+    全ての代表パーティションに対して、全ての部分集合のデビエーションをチェックし、
+    1つでもデビエーションが成立しないパーティションをペシミスティックコアとして出力する。
 
     :param data: プレイヤーのリスト。
     :param subsets: data から生成された全ての部分集合のリスト。
@@ -67,9 +90,9 @@ def find_and_print_pessimistic_core(data, subsets):
 
 def main():
     """
-    メイン関数として、プレイヤーのデータを使ってペシミスティックコアの探索を行う。
+    メイン関数として、与えられたプレイヤーのデータを使ってペシミスティックコアの探索を行う。
     """
-    n = 3
+    n = 6
     data = list(range(1, n+1))
 
     subsets = core_utils.get_subsets(data)
