@@ -117,6 +117,7 @@ def main():
     data = list(range(1, n+1))
     subsets = core_utils.get_subsets(data)
     output_type="cli"
+    # output_type = "csv"
     find_and_output_pessimistic_core(data, subsets, output_type)
 
 if __name__ == '__main__':
