@@ -33,7 +33,7 @@ def check_coalition_wise_pessimistic_deviation(partition, deviation_candidate):
 
     return True
 
-def process_pessimistic_core(data, subsets):
+def process_coalition_wise_pessimistic_core(data, subsets):
     """
     ペシミスティックコアをチェックし、パーティション、スコア、コアかどうかのリストを生成する関数。
     
@@ -101,12 +101,12 @@ def find_and_output_pessimistic_core(data, subsets, output_type="cli", filename=
     :param output_type: 出力方法を指定（"cli" または "csv"）。
     :param filename: CSV出力の場合のファイル名（デフォルトは "colition_wise_pessimistic_core_output.csv"）。
     """
-    partitions, scores_list, core_status_list = process_pessimistic_core(data, subsets)
-
-    if output_type == "cli":
-        print_to_cli(partitions, scores_list, core_status_list)
-    elif output_type == "csv":
-        write_to_csv(partitions, scores_list, core_status_list, filename)
+    partitions, scores_list, core_status_list = process_coalition_wise_pessimistic_core(data, subsets)
+    output_function = core_utils.get_output_function(output_type)
+    if output_type == "csv":
+        output_function(partitions, scores_list, core_status_list, filename)
+    else:
+        output_function(partitions, scores_list, core_status_list)
 
 def main():
     """

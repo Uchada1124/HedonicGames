@@ -75,35 +75,6 @@ def process_partition_wise_pessimistic_core(data, subsets):
     
     return representative_partitions, all_scores, core_status_list
 
-def write_to_csv(partitions, scores_list, core_status, filename="partition_wise_pessimistic_core_output.csv"):
-    """
-    ペシミスティックコアの結果（パーティション、スコア、コアかどうか）をCSVに出力する関数。
-
-    :param partitions: 各代表パーティションのリスト。
-    :param scores_list: 各パーティションのスコアリスト。
-    :param core_status: ペシミスティックコアかどうかのステータスリスト。
-    :param filename: CSVファイルの名前（デフォルト: "partition_wise_pessimistic_core_output.csv"）。
-    """
-    with open(filename, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(["Partition", "Scores", "Pessimistic Core"])
-        for partition, score, core in zip(partitions, scores_list, core_status):
-            writer.writerow([partition, score, core])
-
-def print_to_cli(partitions, scores_list, core_status):
-    """
-    ペシミスティックコアの結果（パーティション、スコア、コアかどうか）をCLIに出力する関数。
-
-    :param partitions: 各代表パーティションのリスト。
-    :param scores_list: 各パーティションのスコアリスト。
-    :param core_status: ペシミスティックコアかどうかのステータスリスト。
-    """
-    for partition, score, core in zip(partitions, scores_list, core_status):
-        print(f"Partition: {partition}")
-        print(f"Scores: {score}")
-        print(f"Pessimistic Core: {core}")
-        print("-" * 50)
-
 def find_and_output_pessimistic_core(data, subsets, output_type="cli", filename="partition_wise_pessimistic_core_output.csv"):
     """
     ペシミスティックコアの結果をCLIまたはCSVに出力する。
@@ -113,19 +84,20 @@ def find_and_output_pessimistic_core(data, subsets, output_type="cli", filename=
     :param output_type: 出力方法を指定（"cli" または "csv"）。
     :param filename: CSV出力の場合のファイル名（デフォルト: "partition_wise_pessimistic_core_output.csv"）。
     """
-    partitions, scores_list, core_status_list = process_partition_wise_pessimistic_core(data, subsets)
 
-    if output_type == "cli":
-        print_to_cli(partitions, scores_list, core_status_list)
-    elif output_type == "csv":
-        write_to_csv(partitions, scores_list, core_status_list, filename)
+    partitions, scores_list, core_status_list = process_partition_wise_pessimistic_core(data, subsets)
+    output_function = core_utils.get_output_function(output_type)
+    if output_type == "csv":
+        output_function(partitions, scores_list, core_status_list, filename)
+    else:
+        output_function(partitions, scores_list, core_status_list)
 
 def main():
     """
     メイン関数として、与えられたプレイヤーのデータを使ってペシミスティックコアの探索を行い、結果を出力する。
     出力はCLIまたはCSVで指定可能。
     """
-    n = 5
+    n = 7
     data = list(range(1, n+1))
     subsets = core_utils.get_subsets(data)
     output_type = "cli"

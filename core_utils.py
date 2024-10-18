@@ -1,4 +1,5 @@
 import itertools
+import csv
 import partition_utils
 
 def get_subsets(players):
@@ -35,3 +36,43 @@ def get_remaining_group(partition, deviation_candidate):
             remaining_group.extend(updated_group)
 
     return remaining_group
+
+def write_to_csv(partitions, scores_list, core_status, filename="output.csv"):
+    """
+    ペシミスティックコアの結果（パーティション、スコア、コアかどうか）をCSVに出力する関数。
+
+    :param partitions: 各代表パーティションのリスト。
+    :param scores_list: 各パーティションのスコアリスト。
+    :param core_status: ペシミスティックコアかどうかのステータスリスト。
+    :param filename: CSVファイルの名前（デフォルト: "output.csv"）。
+    """
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Partition", "Scores", "Pessimistic Core"])
+        for partition, score, core in zip(partitions, scores_list, core_status):
+            writer.writerow([partition, score, core])
+
+def print_to_cli(partitions, scores_list, core_status):
+    """
+    ペシミスティックコアの結果（パーティション、スコア、コアかどうか）をCLIに出力する関数。
+
+    :param partitions: 各代表パーティションのリスト。
+    :param scores_list: 各パーティションのスコアリスト。
+    :param core_status: ペシミスティックコアかどうかのステータスリスト。
+    """
+    for partition, score, core in zip(partitions, scores_list, core_status):
+        print(f"Partition: {partition}")
+        print(f"Scores: {score}")
+        print(f"Pessimistic Core: {core}")
+        print("-" * 50)
+
+def get_output_function(output_type="cli"):
+    """
+    出力のための関数を返す。
+    
+    :param output_type: 出力方法（"cli" または "csv"）
+    :return: CLIまたはCSV出力の関数
+    """
+    if output_type == "csv":
+        return write_to_csv
+    return print_to_cli
