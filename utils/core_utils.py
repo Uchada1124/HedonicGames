@@ -1,6 +1,6 @@
 import itertools
 import csv
-import partition_utils
+import utils.partition_utils as partition_utils
 
 def get_subsets(players):
     """

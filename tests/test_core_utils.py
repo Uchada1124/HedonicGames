@@ -1,5 +1,5 @@
 import pytest
-from core_utils import get_subsets, get_remaining_group  # テスト対象の関数をインポート
+from utils.core_utils import get_subsets, get_remaining_group  # テスト対象の関数をインポート
 
 def test_get_subsets():
     """

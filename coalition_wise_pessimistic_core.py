@@ -1,5 +1,5 @@
-import partition_utils
-import core_utils
+import utils.partition_utils as partition_utils
+import utils.core_utils as core_utils
 import csv
 
 def check_coalition_wise_pessimistic_deviation(partition, deviation_candidate):
@@ -92,14 +92,14 @@ def print_to_cli(partitions, scores_list, core_status):
         print(f"Pessimistic Core: {core}")
         print("-" * 50)
 
-def find_and_output_pessimistic_core(data, subsets, output_type="cli", filename="colition_wise_pessimistic_core_output.csv"):
+def find_and_output_pessimistic_core(data, subsets, output_type="cli", filename="./output/colition_wise_pessimistic_core_output.csv"):
     """
     ペシミスティックコアの結果をCLIまたはCSVに出力する関数。
 
     :param data: プレイヤーのリスト。
     :param subsets: 全ての部分集合を含むリスト。
     :param output_type: 出力方法を指定（"cli" または "csv"）。
-    :param filename: CSV出力の場合のファイル名（デフォルトは "colition_wise_pessimistic_core_output.csv"）。
+    :param filename: CSV出力の場合のファイル名（デフォルトは "./output/colition_wise_pessimistic_core_output.csv"）。
     """
     partitions, scores_list, core_status_list = process_coalition_wise_pessimistic_core(data, subsets)
     output_function = core_utils.get_output_function(output_type)
@@ -113,11 +113,11 @@ def main():
     メイン関数として、プレイヤーのデータを使ってペシミスティックコアの探索を行い、結果を出力する。
     出力はCLIまたはCSVで指定可能。
     """
-    n = 5
+    n = 6
     data = list(range(1, n+1))
     subsets = core_utils.get_subsets(data)
-    output_type="cli"
-    # output_type = "csv"
+    # output_type="cli"
+    output_type = "csv"
     find_and_output_pessimistic_core(data, subsets, output_type)
 
 if __name__ == '__main__':

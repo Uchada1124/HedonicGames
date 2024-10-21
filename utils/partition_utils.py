@@ -109,38 +109,39 @@ def main():
     そして代表パーティションの抽出までの一連の手順を実行する。
     """
     # サンプルデータ
-    n = 11
+    n = 9
     data = list(range(1, n+1))
 
     # データの全ての可能なパーティションを取得
     partitions = list(get_partitions(data))
-    for partition in partitions:
-        print(partition)
+    # for partition in partitions:
+    #     print(partition)
 
     # 各パーティションのスコアをリスト形式で計算
     scores_list = score_partitions(partitions)
-    print("Scores as List:")
-    for partition, scores in scores_list.items():
-        print(f"Partition: {partition}, Scores: {scores}")
+    # print("Scores as List:")
+    # for partition, scores in scores_list.items():
+    #     print(f"Partition: {partition}, Scores: {scores}")
 
     # 各パーティションのスコアを辞書形式で計算
     scores_dict = score_partitions(partitions, return_type='dict')
-    print("Scores as Dict:")
-    for partition, scores in scores_dict.items():
-        print(f"Partition: {partition}, Scores: {scores}")
+    # print("Scores as Dict:")
+    # for partition, scores in scores_dict.items():
+    #     print(f"Partition: {partition}, Scores: {scores}")
 
     # スコアに基づいてパーティションをシンメトリーグループ化
     grouped_symmetries = group_by_symmetries(scores_list)
     for symmetry_key, partitions in grouped_symmetries.items():
         print(f"Symmetry Scores: {symmetry_key}")
-        for partition in partitions:
-            print(f"  Partition: {partition}")
+        print(f"  Partition: {partitions[0]}")
+        # for partition in partitions:
+        #     print(f"  Partition: {partition}")
 
     # シンメトリーグループから代表パーティションを抽出
     representative_partitions = get_representative_partitions(grouped_symmetries)
-    print("Representative Partitions:")
-    for partition in representative_partitions:
-        print(partition)
+    # print("Representative Partitions:")
+    # for partition in representative_partitions:
+    #     print(partition)
 
 if __name__ == '__main__':
     main()

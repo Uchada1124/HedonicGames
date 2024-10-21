@@ -1,5 +1,5 @@
 import pytest
-from partition_utils import (
+from utils.partition_utils import (
     get_partitions,
     score_partition_as_list,
     score_partition_as_dict,
