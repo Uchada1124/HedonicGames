@@ -1,6 +1,7 @@
 # HedonicGames
 
 ## 概要
+クールノー競争からなるhedonic gameにおいて、coalition-wise pessimistic coreとpartition-wise pessimistic coreに入るパーティションを探査するプログラムを作成しました。hedonic gameの分析に役立ててほしいですが、あくまでもプログラムによる結果ということで、厳密な証明はされていないことに注意してください。
 
 ## 環境のセットアップ
    `requirements.txt`をルートディレクトリに置いているので、以下のコマンドで必要なパッケージをインストールできます。
