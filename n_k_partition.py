@@ -30,7 +30,7 @@ def main():
     CLIまたはCSV出力に対応したメイン関数
     """
     output_type = "csv"  # "cli" or "csv"
-    filename = "./output/n_1_partition_output.csv"
+    filename = "./output/n_k_partition_output.csv"
     start = 3
     end = 12
 
