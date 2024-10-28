@@ -97,7 +97,7 @@ def main():
     メイン関数として、与えられたプレイヤーのデータを使ってペシミスティックコアの探索を行い、結果を出力する。
     出力はCLIまたはCSVで指定可能。
     """
-    n = 6
+    n = 9
     data = list(range(1, n+1))
     subsets = core_utils.get_subsets(data)
     # output_type = "cli"
