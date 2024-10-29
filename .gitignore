@@ -5,5 +5,5 @@ __pycache__/
 # pytest cache
 .pytest_cache/
 
-# output folder
-/output/
+# CSV files
+*.csv
