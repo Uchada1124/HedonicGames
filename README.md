@@ -12,7 +12,7 @@
 
 ## 各コードの紹介
 
-### `n_1_partition.py`
+### `n_k_partition.py`
 k人提携とn-k人提携のパーティションがコアかどうかを確認し、結果を出力します。
 - CLI出力：output_typeをcliに設定すると、結果がターミナルに表示されます。
 - CSV出力：output_typeをcsvに設定すると、./output/n_k_progress_output.csvに結果が出力されます。
@@ -20,7 +20,7 @@ k人提携とn-k人提携のパーティションがコアかどうかを確認�
 以下のコマンドで実行します。
 
 ```bash
-python n_1_partition.py
+python n_k_partition.py
 ```
 
 ### `coalition_wise_pessimistic_core.py`
